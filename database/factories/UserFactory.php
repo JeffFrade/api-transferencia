@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
+    public $model = \App\Repositories\Models\User::class;
+
     /**
      * The current password being used by the factory.
      */
@@ -23,8 +25,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $cpf = random_int(0, 1);
+        $document = $cpf ? rand(10000000000, 99999999999) : rand(10000000000000, 99999999999999);
+
         return [
             'name' => fake()->name(),
+            'document' => $document,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
