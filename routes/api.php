@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return response()->json(['message' => 'Ok']);
-});
+Route::group(['prefix' => 'transfer'], function () {
+    Route::post('/', [\App\Http\TransferenceController::class, 'send'])
+        ->name('transfer.send');
+})->withoutMiddleware('*');
