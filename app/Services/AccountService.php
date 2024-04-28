@@ -39,6 +39,24 @@ class AccountService
         return $this->accountRepository->create($data);
     }
 
+    public function update(array $data, int $id)
+    {
+        $this->edit($id);
+        $this->userService->edit($data['id_user']);
+
+        Log::info(
+            sprintf(
+                'Atualizando a conta de ID %s com o conteúdo: %s',
+                $id,
+                json_encode($data)
+            )
+        );
+
+        $this->accountRepository->update($data, $id);
+
+        return $this->edit($id);
+    }
+
     public function delete(int $id)
     {
         Log::info('Excluindo a conta: ' . $id);

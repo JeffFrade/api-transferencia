@@ -49,6 +49,25 @@ class AccountController extends Controller
         }
     }
 
+    public function update(Request $request, int $id)
+    {
+        try {
+            $params = $this->toValidate($request);
+
+            $account = $this->accountService->update($params, $id);
+
+            return response()->json([
+                'message' => 'Conta atualizada com sucesso!',
+                'data' => $account
+            ], 200);
+        } catch (
+            AccountNotFoundException |
+            InvalidArgumentException |
+            UserNotFoundException  $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
     public function delete(int $id)
     {
         try {
