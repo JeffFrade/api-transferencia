@@ -12,4 +12,9 @@ class UserService
     {
         $this->userRepository = $userRepository;
     }
+
+    public function store(array $data)
+    {
+        return $this->userRepository->create($data);
+    }
 }
