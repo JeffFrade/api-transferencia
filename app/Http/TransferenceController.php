@@ -31,9 +31,11 @@ class TransferenceController extends Controller
             UnauthorizedTransferException $e
         ) {
             $code = $e->getCode();
-            $message = $e->getMessage();
+            $message = [
+                'error' =>$e->getMessage()
+            ];
         } finally {
-            return response()->json(['error' => $message], $code);
+            return response()->json($message, $code);
         }
     }
 
