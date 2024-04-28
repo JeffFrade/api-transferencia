@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Core\Support\Controller;
+use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\UserNotFoundException;
 use App\Services\AccountService;
 use Illuminate\Http\Request;
@@ -44,6 +45,19 @@ class AccountController extends Controller
                 'data' => $account
             ], 200);
         } catch (InvalidArgumentException | UserNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
+    public function delete(int $id)
+    {
+        try {
+            $this->accountService->delete($id);
+
+            return response()->json([
+                'message' => 'Conta excluída com sucesso',
+            ]);
+        } catch (AccountNotFoundException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }

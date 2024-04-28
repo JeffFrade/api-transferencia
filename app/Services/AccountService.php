@@ -39,6 +39,13 @@ class AccountService
         return $this->accountRepository->create($data);
     }
 
+    public function delete(int $id)
+    {
+        Log::info('Excluindo a conta: ' . $id);
+        $this->edit($id);
+        $this->accountRepository->delete($id);
+    }
+
     public function isPersonalAccount(int $id)
     {
         $account = $this->edit($id);

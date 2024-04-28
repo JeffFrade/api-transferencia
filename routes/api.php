@@ -30,4 +30,7 @@ Route::group(['prefix' => 'account'], function () {
 
     Route::post('/', [AccountController::class, 'store'])
         ->name('account.store');
+
+    Route::delete('/{id}', [AccountController::class, 'delete'])
+        ->name('account.delete');
 });
