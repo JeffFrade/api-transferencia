@@ -32,7 +32,7 @@ class TransferenceController extends Controller
         ) {
             $code = $e->getCode();
             $message = [
-                'error' =>$e->getMessage()
+                'error' => $e->getMessage()
             ];
         } finally {
             return response()->json($message, $code);
@@ -43,8 +43,8 @@ class TransferenceController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'id_payer' => 'required|numeric',
-            'id_payee' => 'required|numeric',
+            'payer' => 'required|numeric',
+            'payee' => 'required|numeric',
             'value' => 'required|numeric|min:0'
         ]);
 

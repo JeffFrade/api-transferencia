@@ -31,7 +31,7 @@ class TransferenceService
     {
         $this->transferenceRepository->startTransaction();
 
-        $this->isPersonalAccount($data['id_payer']);
+        $this->isPersonalAccount($data['payer']);
         // TODO: Criar lógica de saque e depósito.
         $this->sendApprove();
 
