@@ -17,11 +17,12 @@ class TransferenceController extends Controller
         $this->transferenceService = $transferenceService;
     }
 
-    // public function send(Request $request)
     public function send(Request $request)
     {
         try {
             $params = $this->toValidate($request);
+            $this->transferenceService->send($params);
+
             return response()->json(['message' => 'Ok']);
         } catch (InvalidArgumentException $e) {
             return response()->json($e->getMessage(), 400);
