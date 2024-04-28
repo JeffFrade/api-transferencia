@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Core\Support\Controller;
+use App\Exceptions\UserNotFoundException;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +16,20 @@ class UserController extends Controller
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
+    }
+
+    public function index(Request $request)
+    {
+        try {
+            $params = $request->all();
+
+            return response()->json([
+                'message' => 'Dados encontrados!',
+                'data' => $this->userService->index($params)
+            ]);
+        } catch (UserNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
 
     public function store(Request $request)

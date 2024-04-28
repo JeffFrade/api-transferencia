@@ -10,6 +10,9 @@ Route::group(['prefix' => 'transfer'], function () {
 });
 
 Route::group(['prefix' => 'user'], function () {
+    Route::get('/', [UserController::class, 'index'])
+        ->name('user.index');
+
     Route::post('/', [UserController::class, 'store'])
-        ->name('users.store');
+        ->name('user.store');
 });
