@@ -46,6 +46,27 @@ class UserService
         return $user;
     }
 
+    public function update(array $data, int $id)
+    {
+        $this->edit($id);
+
+        if (!empty($data['password'] ?? '')) {
+            $data['password'] = StringHelper::hashPassword($data['password']);
+        }
+
+        Log::info(
+            sprintf(
+                'Atualizando o usuário de ID %s com o conteúdo: %s',
+                $id,
+                json_encode($data)
+            )
+        );
+
+        $this->userRepository->update($data, $id);
+
+        return $this->edit($id);
+    }
+
     public function delete(int $id)
     {
         Log::info('Excluindo o usuário: ' . $id);

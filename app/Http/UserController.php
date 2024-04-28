@@ -48,6 +48,22 @@ class UserController extends Controller
         }
     }
 
+    public function update(Request $request, int $id)
+    {
+        try {
+            $params = $this->toValidate($request, true, $id);
+
+            $user = $this->userService->update($params, $id);
+
+            return response()->json([
+                'message' => 'Usuário atualizado com sucesso!',
+                'data' => $user
+            ], 200);
+        } catch (InvalidArgumentException | UserNotFoundException  $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
     public function delete(int $id)
     {
         try {
