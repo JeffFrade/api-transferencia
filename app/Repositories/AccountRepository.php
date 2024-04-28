@@ -11,4 +11,15 @@ class AccountRepository extends AbstractRepository
     {
         $this->model = $model;
     }
+
+    public function index(?int $idUser = null)
+    {
+        $model = $this->model;
+
+        if (!is_null($idUser)) {
+            $model = $model->where('id_user', $idUser);
+        }
+
+        return $model->get();
+    }
 }

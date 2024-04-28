@@ -9,10 +9,59 @@ use Log;
 class AccountService
 {
     private $accountRepository;
+    private $userService;
 
-    public function __construct(AccountRepository $accountRepository)
+    public function __construct(
+        AccountRepository $accountRepository,
+        UserService $userService
+    )
     {
         $this->accountRepository = $accountRepository;
+        $this->userService = $userService;
+    }
+
+    public function index(array $data)
+    {
+        $data = $this->accountRepository->index($data['id_user'] ?? null);
+
+        if (count($data) <= 0) {
+            throw new AccountNotFoundException('Não há contas para os filtros informados', 404);
+        }
+
+        return $data;
+    }
+
+    public function store(array $data)
+    {
+        $this->userService->edit($data['id_user']);
+
+        Log::info('Criando a conta: ' . json_encode($data));
+        return $this->accountRepository->create($data);
+    }
+
+    public function update(array $data, int $id)
+    {
+        $this->edit($id);
+        $this->userService->edit($data['id_user']);
+
+        Log::info(
+            sprintf(
+                'Atualizando a conta de ID %s com o conteúdo: %s',
+                $id,
+                json_encode($data)
+            )
+        );
+
+        $this->accountRepository->update($data, $id);
+
+        return $this->edit($id);
+    }
+
+    public function delete(int $id)
+    {
+        Log::info('Excluindo a conta: ' . $id);
+        $this->edit($id);
+        $this->accountRepository->delete($id);
     }
 
     public function isPersonalAccount(int $id)

@@ -3,19 +3,20 @@
 namespace App\Http;
 
 use App\Core\Support\Controller;
+use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\UserNotFoundException;
-use App\Services\UserService;
+use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
-class UserController extends Controller
+class AccountController extends Controller
 {
-    private $userService;
+    private $accountService;
 
-    public function __construct(UserService $userService)
+    public function __construct(AccountService $accountService)
     {
-        $this->userService = $userService;
+        $this->accountService = $accountService;
     }
 
     public function index(Request $request)
@@ -25,7 +26,7 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Dados encontrados!',
-                'data' => $this->userService->index($params)
+                'data' => $this->accountService->index($params)
             ]);
         } catch (UserNotFoundException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
@@ -37,13 +38,13 @@ class UserController extends Controller
         try {
             $params = $this->toValidate($request);
 
-            $user = $this->userService->store($params);
+            $account = $this->accountService->store($params);
 
             return response()->json([
-                'message' => 'Usuário cadastrado com sucesso!',
-                'data' => $user
+                'message' => 'Conta cadastrada com sucesso!',
+                'data' => $account
             ], 200);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException | UserNotFoundException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
@@ -51,15 +52,18 @@ class UserController extends Controller
     public function update(Request $request, int $id)
     {
         try {
-            $params = $this->toValidate($request, true, $id);
+            $params = $this->toValidate($request);
 
-            $user = $this->userService->update($params, $id);
+            $account = $this->accountService->update($params, $id);
 
             return response()->json([
-                'message' => 'Usuário atualizado com sucesso!',
-                'data' => $user
+                'message' => 'Conta atualizada com sucesso!',
+                'data' => $account
             ], 200);
-        } catch (InvalidArgumentException | UserNotFoundException  $e) {
+        } catch (
+            AccountNotFoundException |
+            InvalidArgumentException |
+            UserNotFoundException  $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
@@ -67,29 +71,21 @@ class UserController extends Controller
     public function delete(int $id)
     {
         try {
-            $this->userService->delete($id);
+            $this->accountService->delete($id);
 
             return response()->json([
-                'message' => 'Usuário excluído com sucesso',
+                'message' => 'Conta excluída com sucesso',
             ]);
-        } catch (UserNotFoundException $e) {
+        } catch (AccountNotFoundException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
 
-    protected function toValidate(
-        Request $request,
-        bool $isUpdate = false,
-        ?int $id = null
-    )
+    protected function toValidate(Request $request)
     {
-        $passwordField = ($isUpdate ? 'nullable' : 'required');
-
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:255',
-            'document' => 'required|min:11|max:14|unique:users,document,' . $id,
-            'email' => 'required|unique:users,email,' . $id,
-            'password' => $passwordField . '|min:8'
+            'id_user' => 'required|numeric',
+            'balance' => 'required|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
