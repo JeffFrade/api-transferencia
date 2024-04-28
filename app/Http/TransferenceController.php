@@ -3,10 +3,12 @@
 namespace App\Http;
 
 use App\Core\Support\Controller;
+use App\Exceptions\IsShopkeeperException;
 use App\Services\TransferenceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+use UnauthorizedTransferException;
 
 class TransferenceController extends Controller
 {
@@ -21,11 +23,17 @@ class TransferenceController extends Controller
     {
         try {
             $params = $this->toValidate($request);
-            $this->transferenceService->send($params);
-
-            return response()->json(['message' => 'Ok']);
-        } catch (InvalidArgumentException $e) {
-            return response()->json($e->getMessage(), 400);
+            $message = $this->transferenceService->send($params);
+            $code = 200;
+        } catch (
+            InvalidArgumentException |
+            IsShopkeeperException |
+            UnauthorizedTransferException $e
+        ) {
+            $code = $e->getCode();
+            $message = $e->getMessage();
+        } finally {
+            return response()->json(['error' => $message], $code);
         }
     }
 
@@ -40,7 +48,7 @@ class TransferenceController extends Controller
 
         if ($validator->fails()) {
             if (empty($validator->messages()->messages()) === false) {
-                throw new InvalidArgumentException($validator->messages());
+                throw new InvalidArgumentException($validator->messages(), 400);
             }
         }
 

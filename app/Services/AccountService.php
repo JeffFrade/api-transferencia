@@ -12,4 +12,15 @@ class AccountService
     {
         $this->accountRepository = $accountRepository;
     }
+
+    public function isPersonalAccount(int $id)
+    {
+        $account = $this->accountRepository->findFirst('id', $id);
+
+        if (strlen($account->user->document) > 11) {
+            return false;
+        }
+
+        return true;
+    }
 }
