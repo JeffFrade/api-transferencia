@@ -48,6 +48,19 @@ class UserController extends Controller
         }
     }
 
+    public function delete(int $id)
+    {
+        try {
+            $this->userService->delete($id);
+
+            return response()->json([
+                'message' => 'Usuário excluído com sucesso',
+            ]);
+        } catch (UserNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
     protected function toValidate(
         Request $request,
         bool $isUpdate = false,

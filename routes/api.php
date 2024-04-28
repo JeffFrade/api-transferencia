@@ -15,4 +15,7 @@ Route::group(['prefix' => 'user'], function () {
 
     Route::post('/', [UserController::class, 'store'])
         ->name('user.store');
+
+    Route::delete('/{id}', [UserController::class, 'delete'])
+        ->name('user.delete');
 });
