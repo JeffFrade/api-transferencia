@@ -20,6 +20,17 @@ class AccountService
         $this->userService = $userService;
     }
 
+    public function index(array $data)
+    {
+        $data = $this->accountRepository->index($data['id_user'] ?? null);
+
+        if (count($data) <= 0) {
+            throw new AccountNotFoundException('Não há contas para os filtros informados', 404);
+        }
+
+        return $data;
+    }
+
     public function store(array $data)
     {
         $this->userService->edit($data['id_user']);

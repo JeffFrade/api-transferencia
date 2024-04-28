@@ -18,6 +18,20 @@ class AccountController extends Controller
         $this->accountService = $accountService;
     }
 
+    public function index(Request $request)
+    {
+        try {
+            $params = $request->all();
+
+            return response()->json([
+                'message' => 'Dados encontrados!',
+                'data' => $this->accountService->index($params)
+            ]);
+        } catch (UserNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
     public function store(Request $request)
     {
         try {

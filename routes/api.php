@@ -25,6 +25,9 @@ Route::group(['prefix' => 'user'], function () {
 });
 
 Route::group(['prefix' => 'account'], function () {
+    Route::get('/', [AccountController::class, 'index'])
+        ->name('account.index');
+
     Route::post('/', [AccountController::class, 'store'])
         ->name('account.store');
 });
