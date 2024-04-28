@@ -1,0 +1,66 @@
+version: '3.5'
+services:
+  php-fpm:
+    build: ./docker/php
+    image: jefffrade/transferencia-api:php-fpm
+    restart: on-failure
+    container_name: jefffrade-transferencia-api-php-fpm
+    command: php-fpm
+    links:
+      - mysql
+    volumes:
+      - ./:/transferencia-api
+    networks:
+      - app
+      - db
+    healthcheck:
+      test: ['CMD', 'sh', '-c', 'netstat -an | fgrep 9000 | fgrep -q LISTEN']
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
+  nginx:
+    build: ./docker/nginx
+    image: jefffrade/transferencia-api:nginx
+    restart: on-failure
+    container_name: jefffrade-transferencia-api-nginx
+    command: nginx -g "daemon off;"
+    links:
+      - php-fpm
+    ports:
+      - "${DOCKER_NGINX_PORT_HTTP}:80"
+    volumes:
+      - ./:/transferencia-api
+    networks:
+      - app
+    healthcheck:
+      test: ['CMD', 'sh', '-c', 'netstat -an | fgrep 80 | fgrep -q LISTEN']
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
+  mysql:
+    build: ./docker/mysql
+    image: jefffrade/transferencia-api:mysql
+    restart: on-failure
+    container_name: jefffrade-transferencia-api-mysql
+    volumes:
+      - "${DOCKER_DATA_PATH}/mysql:/var/lib/mysql"
+    command:
+      - "--innodb_use_native_aio=0"
+    ports:
+      - "${DB_PORT}:3306"
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    networks:
+      - db
+    healthcheck:
+      test: ['CMD', 'sh', '-c', 'netstat -an | fgrep 3306 | fgrep -q LISTEN']
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
+networks:
+  app:
+  db:

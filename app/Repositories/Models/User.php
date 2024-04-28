@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Repositories\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -18,8 +19,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'document',
         'email',
-        'password',
+        'password'
     ];
 
     /**
@@ -43,5 +45,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public static function newFactory()
+    {
+        return UserFactory::new();
+    }
+
+    public function accounts()
+    {
+        return $this->hasMany(Account::class, 'id_user', 'id');
     }
 }
