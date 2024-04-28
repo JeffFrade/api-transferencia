@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\AccountController;
 use App\Http\UserController;
-use Illuminate\Support\Facades\Route;
 use App\Http\TransferenceController;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'transfer'], function () {
     Route::post('/', [TransferenceController::class, 'send'])
@@ -21,4 +22,18 @@ Route::group(['prefix' => 'user'], function () {
 
     Route::delete('/{id}', [UserController::class, 'delete'])
         ->name('user.delete');
+});
+
+Route::group(['prefix' => 'account'], function () {
+    Route::get('/', [AccountController::class, 'index'])
+        ->name('account.index');
+
+    Route::post('/', [AccountController::class, 'store'])
+        ->name('account.store');
+
+    Route::put('/{id}', [AccountController::class, 'update'])
+        ->name('account.update');
+
+    Route::delete('/{id}', [AccountController::class, 'delete'])
+        ->name('account.delete');
 });
