@@ -39,7 +39,9 @@ class TransferenceController extends Controller
                 'error' => $e->getMessage()
             ];
         } finally {
-            $message = $message ?? 'Erro interno, favor consultar a TI';
+            $message = $message ?? [
+                'error' => 'Erro interno, favor consultar a TI'
+            ];
 
             return response()->json($message, $code ?? 500);
         }

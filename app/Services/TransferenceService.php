@@ -32,6 +32,14 @@ class TransferenceService
     {
         $this->transferenceRepository->startTransaction();
 
+        Log::info(
+            sprintf(
+                'Transferência iniciada entre as contas de ID %s %s',
+                $data['payer'],
+                $data['payee']
+            )
+        );
+
         $this->isPersonalAccount($data['payer']);
         $this->hasBallance($data['payer'], $data['value']);
         $this->accountService->changeValues($data['payer'], $data['payee'], $data['value']);
@@ -40,6 +48,15 @@ class TransferenceService
         $this->transferenceRepository->commitTransaction();
 
         $this->sendEmail();
+        $this->store($data);
+
+        Log::info(
+            sprintf(
+                'Transferência realizada com sucesso entre as contas de ID %s %s',
+                $data['payer'],
+                $data['payee']
+            )
+        );
 
         return [
             'message' => 'Transferência realizada!'
@@ -94,5 +111,14 @@ class TransferenceService
                 400
             );
         }
+    }
+
+    public function store(array $data)
+    {
+        return $this->transferenceRepository->create([
+            'id_payer' => $data['payee'],
+            'id_payee' => $data['payer'],
+            'value' => $data['value']
+        ]);
     }
 }
