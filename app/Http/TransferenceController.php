@@ -3,13 +3,14 @@
 namespace App\Http;
 
 use App\Core\Support\Controller;
+use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\InsufficientBalanceException;
 use App\Exceptions\IsShopkeeperException;
+use App\Exceptions\UnauthorizedTransferException;
 use App\Services\TransferenceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
-use UnauthorizedTransferException;
 
 class TransferenceController extends Controller
 {
@@ -27,6 +28,7 @@ class TransferenceController extends Controller
             $message = $this->transferenceService->send($params);
             $code = 200;
         } catch (
+            AccountNotFoundException |
             InsufficientBalanceException |
             InvalidArgumentException |
             IsShopkeeperException |

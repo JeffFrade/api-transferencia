@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Exceptions\InsufficientBalanceException;
 use App\Exceptions\IsShopkeeperException;
+use App\Exceptions\UnauthorizedTransferException;
 use App\Repositories\TransferenceRepository;
 use Log;
-use UnauthorizedTransferException;
 
 class TransferenceService
 {
@@ -34,7 +34,7 @@ class TransferenceService
 
         $this->isPersonalAccount($data['payer']);
         $this->hasBallance($data['payer'], $data['value']);
-        // TODO: Criar lógica de saque e depósito.
+        $this->accountService->changeValues($data['payer'], $data['payee'], $data['value']);
         $this->sendApprove();
 
         $this->transferenceRepository->commitTransaction();
