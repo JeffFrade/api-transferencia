@@ -1,3 +1,5 @@
 <?php
 
-return [];
+return [
+    \App\Core\Providers\ModelServiceProvider::class,
+];

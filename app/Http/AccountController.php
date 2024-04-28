@@ -28,7 +28,7 @@ class AccountController extends Controller
                 'message' => 'Dados encontrados!',
                 'data' => $this->accountService->index($params)
             ]);
-        } catch (UserNotFoundException $e) {
+        } catch (AccountNotFoundException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
