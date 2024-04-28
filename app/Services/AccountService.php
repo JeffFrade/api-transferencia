@@ -41,7 +41,7 @@ class AccountService
 
     public function update(array $data, int $id)
     {
-        $this->edit($id);
+        $account = $this->edit($id);
         $this->userService->edit($data['id_user']);
 
         Log::info(
@@ -51,6 +51,8 @@ class AccountService
                 json_encode($data)
             )
         );
+
+        $data['balance'] += $account->balance;
 
         $this->accountRepository->update($data, $id);
 
