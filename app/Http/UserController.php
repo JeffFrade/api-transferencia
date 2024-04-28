@@ -43,7 +43,7 @@ class UserController extends Controller
                 'message' => 'Usuário cadastrado com sucesso!',
                 'data' => $user
             ], 200);
-        } catch (InvalidArgumentException  $e) {
+        } catch (InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }

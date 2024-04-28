@@ -9,10 +9,23 @@ use Log;
 class AccountService
 {
     private $accountRepository;
+    private $userService;
 
-    public function __construct(AccountRepository $accountRepository)
+    public function __construct(
+        AccountRepository $accountRepository,
+        UserService $userService
+    )
     {
         $this->accountRepository = $accountRepository;
+        $this->userService = $userService;
+    }
+
+    public function store(array $data)
+    {
+        $this->userService->edit($data['id_user']);
+
+        Log::info('Criando a conta: ' . json_encode($data));
+        return $this->accountRepository->create($data);
     }
 
     public function isPersonalAccount(int $id)
