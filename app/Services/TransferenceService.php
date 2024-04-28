@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InsufficientBalanceException;
 use App\Exceptions\IsShopkeeperException;
 use App\Repositories\TransferenceRepository;
 use Log;
@@ -32,6 +33,7 @@ class TransferenceService
         $this->transferenceRepository->startTransaction();
 
         $this->isPersonalAccount($data['payer']);
+        $this->hasBallance($data['payer'], $data['value']);
         // TODO: Criar lógica de saque e depósito.
         $this->sendApprove();
 
@@ -68,10 +70,27 @@ class TransferenceService
             ->isPersonalAccount($idPayer);
 
         if (!$isPersonalAccount) {
-            Log::info('Tentativa de transferência por lojista, ID da conta: ' . $idPayer);
+            Log::info('Tentativa de transferência por lojista | ID da conta: ' . $idPayer);
             $this->transferenceRepository->rollbackTransaction();
             throw new IsShopkeeperException(
                 'Operação inválida, transferência de valores somente de pessoas físicas é permitida.',
+                400
+            );
+        }
+    }
+
+    private function hasBallance(int $idPayer, float $value)
+    {
+        $hasBallance = $this->accountService->hasBallance($idPayer, $value);
+
+        if (!$hasBallance) {
+            Log::info(
+                'Tentativa de transferência com saldo maior que o disponível na conta | ID da conta : ' . $idPayer
+            );
+
+            $this->transferenceRepository->rollbackTransaction();
+            throw new InsufficientBalanceException(
+                'Saldo insuficiente para completar a transferência.',
                 400
             );
         }

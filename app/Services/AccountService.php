@@ -23,4 +23,15 @@ class AccountService
 
         return true;
     }
+
+    public function hasBallance(int $id, float $value)
+    {
+        $account = $this->accountRepository->findFirst('id', $id);
+
+        if ($value <= $account->balance) {
+            return true;
+        }
+
+        return false;
+    }
 }

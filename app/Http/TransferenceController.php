@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Core\Support\Controller;
+use App\Exceptions\InsufficientBalanceException;
 use App\Exceptions\IsShopkeeperException;
 use App\Services\TransferenceService;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ class TransferenceController extends Controller
             $message = $this->transferenceService->send($params);
             $code = 200;
         } catch (
+            InsufficientBalanceException |
             InvalidArgumentException |
             IsShopkeeperException |
             UnauthorizedTransferException $e
@@ -35,7 +37,9 @@ class TransferenceController extends Controller
                 'error' => $e->getMessage()
             ];
         } finally {
-            return response()->json($message, $code);
+            $message = $message ?? 'Erro interno, favor consultar a TI';
+
+            return response()->json($message, $code ?? 500);
         }
     }
 
